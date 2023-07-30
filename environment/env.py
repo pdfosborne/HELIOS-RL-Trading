@@ -20,7 +20,11 @@ class Environment:
 
     def __init__(self, local_setup_info: dict):
         # --- INIT env from engine
-        self.env = Engine()
+        self.env = Engine(stock_name=local_setup_info['stock_name'],
+                          trading_days=local_setup_info['trading_days'],
+                          window_size=local_setup_info['window_size'],
+                          balance=local_setup_info['initial_balance'],
+                          )
         self.start_obs = self.env.reset()
         # ---
         # --- PRESET HELIOS INFO
@@ -56,7 +60,7 @@ class Environment:
             action_history = []
             # ---
             # Start observation is used instead of .reset() fn so that this can be overriden for repeat analysis from the same start pos
-            obs = self.start_obs
+            obs = self.env.reset()
             legal_moves = self.env.legal_move_generator(obs)
             state = self.agent_state_adapter.adapter(state=obs, legal_moves=legal_moves, episode_action_history=action_history, encode=True)
             # ---
@@ -77,8 +81,8 @@ class Environment:
                     legal_moves = self.env.legal_move_generator(next_obs) 
                     next_state = self.agent_state_adapter.adapter(state=next_obs, legal_moves=legal_moves, episode_action_history=action_history, encode=True)
                     # HELIOS trackers    
-                    self.helios.observed_state_tracker(engine_observation=next_obs,
-                                                        language_state=self.agent_state_adapter.adapter(state=next_obs, legal_moves=legal_moves, episode_action_history=action_history, encode=False))
+                    #self.helios.observed_state_tracker(engine_observation=next_obs,
+                    #                                    language_state=self.agent_state_adapter.adapter(state=next_obs, legal_moves=legal_moves, episode_action_history=action_history, encode=False))
                     
                     # MUST COME BEFORE SUB-GOAL CHECK OR 'TERMINAL STATES' WILL BE FALSE
                     self.helios.experience_sampling_add(state, agent_action, next_state, reward, terminated)

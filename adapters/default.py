@@ -10,7 +10,7 @@ class DefaultAdapter:
 
     def __init__(self):
         # TODO: Update this based on the current problem, each requires preset knowledge of all possible states/actions/objects
-        # - Possible Atates
+        # - Possible States
         # - Possible Actions
         # - Prior Actions
         # - Possible Objects
@@ -21,12 +21,12 @@ class DefaultAdapter:
     
     def adapter(self, state:any, legal_moves:list = None, episode_action_history:list = None, encode:bool = True, indexed: bool = False) -> Tensor:
         """ Use Language name for every piece name for current board position """
-       
+        
         # Encode to Tensor for agents
         if encode:
-            state_encoded = self.encoder.encode(state=state)
+            state_encoded = torch.tensor(state)#self.encoder.encode(state=state)
         else:
-            state_encoded = state
+            state_encoded = state[0]
 
         if (indexed):
             state_indexed = list()
@@ -36,5 +36,4 @@ class DefaultAdapter:
                 state_indexed.append(DefaultAdapter._cached_state_idx[sent])
 
             state_encoded = torch.tensor(state_indexed)
-
         return state_encoded
